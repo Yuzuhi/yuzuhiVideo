@@ -1,12 +1,16 @@
 <template>
   <div>
     <Header />
-    <h2 class="title">
-      {{ title }}&nbsp;&nbsp;&nbsp;&nbsp;第{{ episode.split(".")[0] }}話
-    </h2>
     <div class="v-wrap">
-      <VidePlayer :src="src" />
-      <EpisodeBtns :episodes="episodes" :title="title" :episode="episode" />
+      <VidePlayer :src="src" :title="title" :episode="episode" :img="img" />
+      <EpisodeBtns
+        :vid="vid"
+        :eid="eid"
+        :episodes="episodes"
+        :title="title"
+        :episode="episode"
+        :classify="classify"
+      />
     </div>
   </div>
 </template>
@@ -16,6 +20,8 @@ import Header from "@/components/Header";
 import VidePlayer from "@/components/VidePlayer";
 import EpisodeBtns from "@/components/EpisodeBtns";
 import axios from "axios";
+import API from "../const/const";
+
 export default {
   name: "Video",
   components: {
@@ -25,46 +31,77 @@ export default {
   },
   data() {
     return {
-      title: this.$route.params.title,
-      episode: this.$route.params.episode,
+      vid: Number(this.$route.params.vid),
+      eid: Number(this.$route.params.eid),
+      title: this.$route.query.title,
       episodes: [],
       src: "",
+      img: "",
+      episode: "",
+      classify: "",
     };
   },
   methods: {
-    _getVideoInfo(title, episode) {
+    _getVideoInfo(vid, eid) {
       const that = this;
-      axios
-        .get("http://127.0.0.1:8021/v1/video/info", {
-          params: {
-            title,
-            episode,
-          },
-        })
-        .then(
-          function (response) {
-            let responseData = response.data;
-            that.src = responseData.data.src;
-            that.episodes = responseData.data.episodes;
-            console.log(that.episodes);
-          },
-          function (err) {
-            console.log(err);
+
+      axios.get(`${API.backendAPI}v1/video/${vid}/byClassify`).then(
+        function (response) {
+          let responseData = response.data.data;
+          that.episodes = responseData;
+          let breaked = false;
+          for (let i = 0; i < responseData.length; i++) {
+            if (breaked) {
+              break;
+            }
+
+            for (let j = 0; j < responseData[i].length; j++) {
+              if (responseData[i][j].id == eid) {
+                console.log(responseData[i][j]);
+                that.src = responseData[i][j].src;
+                that.episode = responseData[i][j].name;
+                that.classify = responseData[i][j].type;
+                breaked = true;
+                console.log(that.title);
+                break;
+              }
+            }
           }
-        );
+        },
+        function (err) {
+          console.log(err);
+        }
+      );
     },
   },
 
   created() {
-    this._getVideoInfo(this.title, this.episode);
+    this._getVideoInfo(this.vid, this.eid);
+    var _this = this;
+    this.timer = setInterval(function () {
+      let dd = new Date().getDate();
+      let hh = new Date().getHours();
+      let mm = new Date().getMinutes();
+      let ss = new Date().getSeconds();
+      let nowTime = dd + "/" + hh + ":" + mm + ":" + ss;
+      let targetTime = "25/0:0:1";
+      if (nowTime == targetTime) {
+        alert("メリークリスマス( ´∀｀ )");
+      }
+    }, 1000);
+  },
+  beforeDestory() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   },
 };
 </script>
 
 <style lang="less" scoped>
 .v-wrap {
-  width: 720px;
+  width: 1280px;
+  height: 720px;
   margin: 0 auto;
-  // margin: 0px 10;
 }
 </style>

@@ -2,14 +2,26 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home'
 import Video from '../views/Video'
+import Index from '../views/Index'
+import SpecialView from '../views/SpecialView'
+
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect: "/1"
+  },
+  {
+    path: "/special",
+    name: 'Special',
+    component: SpecialView
+  },
+  {
+    path: "/:page",
+    name: 'Index',
+    component: Index
   },
   {
     path: '/about',
@@ -20,9 +32,9 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
-    path:'/video/:title/:episode',
-    name:'Video',
-    component:Video
+    path: '/video/:vid/:eid',
+    name: 'Video',
+    component: Video
   }
 ]
 

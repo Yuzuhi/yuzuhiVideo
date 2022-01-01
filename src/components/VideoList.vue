@@ -1,10 +1,17 @@
 <template>
-  <div class="card-list">
-    <div class="v-card" v-for="(item, index) in videoList" :key="index">
-      <div class="card" @click="video(item.title, item.episodes)">
-        <img :src="item.img" />
-        <div class="title">
-          <p>{{ item.title }}({{ item.episodes.length }})</p>
+  <div class="page-content">
+    <div class="card-list">
+      <div class="v-card" v-for="(item, index) in videoList" :key="index">
+        <div class="card" @click="video(item.id, item.firstEp, item.title)">
+          <div
+            id="video-pic"
+            :style="{
+              backgroundImage: 'url(' + item.img + ')',
+            }"
+          ></div>
+          <div class="title-wrap">
+            <h3 id="title">{{ item.title }}({{ item.episodes }})</h3>
+          </div>
         </div>
       </div>
     </div>
@@ -13,9 +20,15 @@
 
 <script>
 import axios from "axios";
+import API from "../const/const";
 export default {
   name: "VideoList",
-  props: {},
+  props: {
+    page: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       videoList: [],
@@ -26,25 +39,28 @@ export default {
   methods: {
     _getVideoList() {
       const that = this;
-      axios.get("http://127.0.0.1:8021/v1/videos/info").then(
+      axios.get(`${API.backendAPI}v1/videos/${Number(this.page)}/info?page_size=9`).then(
         function (response) {
-          console.log(response.data.data);
           that.videoList = response.data.data;
+          console.log(that.videoList);
         },
         function (err) {
           console.log(err);
         }
       );
     },
-    //页面跳转
-    video(title, episodes) {
-      if (episodes.length < 1) {
+    // 点击跳转
+    video(vid, eid, title) {
+      // 如果当前视频没有第一话，则从数据库中获取到的eid为-1
+      if (eid == -1) {
         return;
       }
-      let episode = episodes[0];
       this.$router.push({
         name: "Video",
-        params: { title, episode },
+        params: { vid, eid },
+        query: {
+          title: title,
+        },
       });
     },
   },
@@ -55,50 +71,61 @@ export default {
 </script>
 
 <style  scoped>
+.page-content {
+  margin: 0 auto;
+  max-width: 1200px;
+  /* padding: 10px 10%; */
+  /* min-height: 100%; */
+  /* width: 80%; */
+}
 .card-list {
   display: flex;
   flex-wrap: wrap;
-  margin: 0px 3em;
+  justify-content: left;
+  margin: 0px auto;
+  width: calc(100% - 20px);
 }
 
 .v-card {
-  width: 19%;
-  height: 300px;
-  margin-left: 1%;
-  padding: 1em 2em;
+  flex: 0 0 33%;
+  max-width: 33%;
+  /* margin: 1% 1%; */
+
+  /* padding: 1em 2em; */
 }
 
 .card {
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
+  padding:10px 20px;
   border-radius: 2px;
   cursor: pointer;
 }
 
-.card > img {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 280px;
+#video-pic {
+  /* width: 100%; */
+  min-height: 140px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: rgb(235, 194, 11) 0px 0px 10px inset;
+  background-position: center;
 }
 
-.title {
+.title-wrap {
   position: absolute;
-  bottom: 0;
-  height: 30px;
-  width: 100%;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), transparent);
+  bottom: 7%;
+  left: 7%;
+  /* right: 5px; */
+  /* height: 30px; */
+  /* width: 100%; */
 }
 
-.title > p {
-  font-size: 14px;
+#title {
   color: #fff;
-  padding-left: 5px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  margin: 0;
 }
 
 /*屏幕宽度大于1600px时的布局*/

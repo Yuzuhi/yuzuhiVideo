@@ -1,0 +1,11 @@
+html{
+    background: url("https://www.wallpapertip.com/wmimgs/92-920369_nintendo-new-years.jpg");
+    background-size:100% 100%
+      
+}
+
+html,body,#app{
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}

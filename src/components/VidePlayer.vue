@@ -1,5 +1,8 @@
 <template>
   <div class="vide-player">
+    <h2 id="video-title">
+      {{ title }}&nbsp;&nbsp;&nbsp;&nbsp;第{{ episode.split(".")[0] }}話
+    </h2>
     <div id="dplayer"></div>
   </div>
 </template>
@@ -10,6 +13,18 @@ export default {
   name: "VidePlayer",
   props: {
     src: {
+      type: String,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    episode: {
+      type: String,
+      required: true,
+    },
+    img: {
       type: String,
       required: true,
     },
@@ -38,9 +53,10 @@ export default {
         // logo: "https://qczh-1252727916.cos.ap-nanjing.myqcloud.com/pic/273658f508d04d488414fd2b84c9f923.png", // 在视频左角上打一个logo
         video: {
           url: this.src, // 播放视频的路径
-          pic: "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1606462956126&di=2d87964d4faf656af55d09d938640d97&imgtype=0&src=http%3A%2F%2Fattachments.gfan.com%2Fforum%2Fattachments2%2F201310%2F10%2F150326y7dzdd8d4kpjjdsd.jpg", // 视频封面图片
-          thumbnails:
-            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1606462956126&di=2d87964d4faf656af55d09d938640d97&imgtype=0&src=http%3A%2F%2Fattachments.gfan.com%2Fforum%2Fattachments2%2F201310%2F10%2F150326y7dzdd8d4kpjjdsd.jpg", // 进度条上的缩略图,需要通过dplayer-thumbnails来生成
+          pic: this.img, // 视频封面图片
+
+          // thumbnails:
+          //   "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1606462956126&di=2d87964d4faf656af55d09d938640d97&imgtype=0&src=http%3A%2F%2Fattachments.gfan.com%2Fforum%2Fattachments2%2F201310%2F10%2F150326y7dzdd8d4kpjjdsd.jpg", // 进度条上的缩略图,需要通过dplayer-thumbnails来生成
         },
         // subtitle: {   //字幕
         //   url: "",   //字幕网址
@@ -53,15 +69,10 @@ export default {
           //  自定义上下文菜单
           // 右键菜单
           {
-            text: "custom1",
-            link: "https://www.bilibili.com",
+            text: "miss U",
           },
           {
-            text: "custom2",
-            click: (player) => {
-              console.log(this.src);
-              console.log(player);
-            },
+            text: "お元気ですか",
           },
         ],
         highlight: [
@@ -90,10 +101,21 @@ export default {
 };
 </script>
 
-<style  scoped>
+<style>
 .vide-player {
   width: 720px;
-  height: 360px;
-  margin: 0 auto 50px;
+  margin: 0 50px;
+  float: left;
+}
+#video-title {
+  text-align: left;
+  margin: 10px 0px;
+  color: white;
+  text-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 rgb(233, 25, 25),
+    -1px -1px 0 #000;
+}
+#dplayer {
+  width: 720px;
+  height: 405px;
 }
 </style>
