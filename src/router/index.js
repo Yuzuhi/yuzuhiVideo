@@ -6,8 +6,6 @@ import Index from '../views/Index'
 import SpecialView from '../views/SpecialView'
 
 
-Vue.use(VueRouter)
-
 const routes = [
   {
     path: '/',
@@ -34,7 +32,8 @@ const routes = [
   {
     path: '/video/:vid/:eid',
     name: 'Video',
-    component: Video
+    component: Video,
+
   }
 ]
 

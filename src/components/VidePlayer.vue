@@ -1,7 +1,7 @@
 <template>
   <div class="vide-player">
     <h2 id="video-title">
-      {{ title }}&nbsp;&nbsp;&nbsp;&nbsp;第{{ episode.split(".")[0] }}話
+      {{ title }}&nbsp;&nbsp;&nbsp;&nbsp;第{{ episode }}話
     </h2>
     <div id="dplayer"></div>
   </div>
@@ -9,9 +9,18 @@
 
 <script>
 import DPlayer from "dplayer";
+import API from "../const/const";
 export default {
   name: "VidePlayer",
   props: {
+    vid: {
+      type: Number,
+      required: true,
+    },
+    eid: {
+      type: Number,
+      required: true,
+    },
     src: {
       type: String,
       required: true,
@@ -28,18 +37,31 @@ export default {
       type: String,
       required: true,
     },
+    timeline: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
       dp: null,
+      beforeUnloadTime: 0,
+      gapTime: 0,
     };
+  },
+  mounted() {
+    window.addEventListener("beforeunload", this.beforeunloadHandler);
+  },
+  beforeDestroy() {
+    this.beforeunloadHandler();
+    window.removeEventListener("beforeunload", this.beforeunloadHandler);
   },
   methods: {
     _createPlayer() {
       if (!this.src) {
         return;
       }
-      new DPlayer({
+      this.dp = new DPlayer({
         container: document.getElementById("dplayer"), //播放器容器
         mutex: false, //  防止同时播放多个用户，在该用户开始播放时暂停其他用户
         theme: "#b7daff", // 风格颜色，例如播放条，音量条的颜色
@@ -88,6 +110,14 @@ export default {
           },
         ],
       });
+      this.dp.seek(this.timeline);
+    },
+
+    beforeunloadHandler() {
+      this.timeline = Math.floor(this.dp.video.currentTime);
+      navigator.sendBeacon(
+        `${API.backendAPI}v1/view/record?vid=${this.vid}&eid=${this.eid}&src=${this.src}&timeline=${this.timeline}`
+      );
     },
   },
   watch: {
@@ -95,7 +125,7 @@ export default {
       handler() {
         this._createPlayer();
       },
-      immediate: true,
+      immediate: false,
     },
   },
 };

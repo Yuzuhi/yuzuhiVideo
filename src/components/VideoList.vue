@@ -2,7 +2,10 @@
   <div class="page-content">
     <div class="card-list">
       <div class="v-card" v-for="(item, index) in videoList" :key="index">
-        <div class="card" @click="video(item.id, item.firstEp, item.title)">
+        <div
+          class="card"
+          @click="video(item.id, item.firstEp, item.title, item.timeline)"
+        >
           <div
             id="video-pic"
             :style="{
@@ -39,7 +42,13 @@ export default {
   methods: {
     _getVideoList() {
       const that = this;
-      axios.get(`${API.backendAPI}v1/videos/${Number(this.page)}/info?page_size=9`).then(
+      axios({
+        method: "get",
+        url: `${API.backendAPI}v1/videos/${this.page}/info`,
+        params: {
+          page_size: 9,
+        },
+      }).then(
         function (response) {
           that.videoList = response.data.data;
           console.log(that.videoList);
@@ -50,7 +59,7 @@ export default {
       );
     },
     // 点击跳转
-    video(vid, eid, title) {
+    video(vid, eid, title, timeline) {
       // 如果当前视频没有第一话，则从数据库中获取到的eid为-1
       if (eid == -1) {
         return;
@@ -59,7 +68,8 @@ export default {
         name: "Video",
         params: { vid, eid },
         query: {
-          title: title,
+          title,
+          timeline,
         },
       });
     },
@@ -97,7 +107,7 @@ export default {
 .card {
   position: relative;
   /* overflow: hidden; */
-  padding:10px 20px;
+  padding: 10px 20px;
   border-radius: 2px;
   cursor: pointer;
 }

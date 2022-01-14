@@ -11,10 +11,10 @@
         <span id="video-btn" v-for="(item, index) in cls" :key="index">
           <el-button
             id="element-btn"
-            :type="item.name == episode ? 'primary' : ''"
+            :type="item.episode == episode ? 'primary' : ''"
             @click="play(item.id)"
           >
-            {{ item.name }}
+            {{ item.episode }}
           </el-button>
         </span>
       </el-tab-pane>
@@ -67,12 +67,12 @@ export default {
 
       let title = this.title;
       let vid = this.vid;
-      this.$router.push({
+      this.$router.replace({
         name: "Video",
         params: { vid, eid },
         query: { title: title },
       });
-      this.$router.go(0);
+      // this.$router.replace(0);
     },
     _getActiveName() {
       for (let i = 0; i < this.episodes.length; i++) {

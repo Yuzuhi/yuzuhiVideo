@@ -2,7 +2,15 @@
   <div>
     <Header />
     <div class="v-wrap">
-      <VidePlayer :src="src" :title="title" :episode="episode" :img="img" />
+      <VidePlayer
+        :src="src"
+        :title="title"
+        :episode="episode"
+        :img="img"
+        :vid="vid"
+        :eid="eid"
+        :timeline="timeline"
+      />
       <EpisodeBtns
         :vid="vid"
         :eid="eid"
@@ -33,6 +41,7 @@ export default {
     return {
       vid: Number(this.$route.params.vid),
       eid: Number(this.$route.params.eid),
+      timeline: Number(this.$route.query.timeline),
       title: this.$route.query.title,
       episodes: [],
       src: "",
@@ -44,7 +53,6 @@ export default {
   methods: {
     _getVideoInfo(vid, eid) {
       const that = this;
-
       axios.get(`${API.backendAPI}v1/video/${vid}/byClassify`).then(
         function (response) {
           let responseData = response.data.data;
@@ -57,12 +65,10 @@ export default {
 
             for (let j = 0; j < responseData[i].length; j++) {
               if (responseData[i][j].id == eid) {
-                console.log(responseData[i][j]);
                 that.src = responseData[i][j].src;
-                that.episode = responseData[i][j].name;
+                that.episode = String(responseData[i][j].episode);
                 that.classify = responseData[i][j].type;
                 breaked = true;
-                console.log(that.title);
                 break;
               }
             }
