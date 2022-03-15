@@ -3,15 +3,31 @@
     <h2 id="video-title">
       {{ title }}&nbsp;&nbsp;&nbsp;&nbsp;第{{ episode }}話
     </h2>
-    <div id="dplayer"></div>
+    <div id="player-component">
+      <div id="dplayer"></div>
+      <div id="btn-wrap">
+        <EpisodeBtns
+          class="btn-group"
+          :vid="vid"
+          :eid="eid"
+          :episodes="episodes"
+          :title="title"
+          :episode="episode"
+          :classify="classify"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import DPlayer from "dplayer";
-import API from "../const/const";
+import EpisodeBtns from "@/components/EpisodeBtns";
 export default {
   name: "VidePlayer",
+  components: {
+    EpisodeBtns,
+  },
   props: {
     vid: {
       type: Number,
@@ -33,6 +49,10 @@ export default {
       type: String,
       required: true,
     },
+    episodes: {
+      type: Array,
+      required: true,
+    },
     img: {
       type: String,
       required: true,
@@ -41,21 +61,19 @@ export default {
       type: Number,
       required: true,
     },
+    classify: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
       dp: null,
-      beforeUnloadTime: 0,
       gapTime: 0,
+      timer: "",
     };
   },
-  mounted() {
-    window.addEventListener("beforeunload", this.beforeunloadHandler);
-  },
-  beforeDestroy() {
-    this.beforeunloadHandler();
-    window.removeEventListener("beforeunload", this.beforeunloadHandler);
-  },
+
   methods: {
     _createPlayer() {
       if (!this.src) {
@@ -110,16 +128,40 @@ export default {
           },
         ],
       });
-      this.dp.seek(this.timeline);
-    },
+      if (this.timeline) {
+        this.dp.seek(this.timeline);
+      }
 
-    beforeunloadHandler() {
-      this.timeline = Math.floor(this.dp.video.currentTime);
-      navigator.sendBeacon(
-        `${API.backendAPI}v1/view/record?vid=${this.vid}&eid=${this.eid}&src=${this.src}&timeline=${this.timeline}`
-      );
+      this.dp.play();
+    },
+    _recordWatchTime() {
+      this.gapTime++;
     },
   },
+  mounted() {
+    // 设置定时器
+    this.timer = setInterval(this._recordWatchTime, 1000);
+  },
+
+  beforeDestroy() {
+    clearInterval(this.timer);
+    // 如果观看时间超过10s,则将本次的观看进度保存至localStorage
+    if (this.gapTime < 10) {
+      return;
+    }
+    let timeline = Math.floor(this.dp.video.currentTime);
+    if (timeline > 5) {
+      timeline = timeline - 5;
+    } else {
+      timeline = 0;
+    }
+    let item = {
+      timeline: timeline,
+      eid: this.eid,
+    };
+    localStorage.setItem(this.vid, JSON.stringify(item));
+  },
+
   watch: {
     src: {
       handler() {
@@ -133,19 +175,38 @@ export default {
 
 <style>
 .vide-player {
-  width: 720px;
-  margin: 0 50px;
-  float: left;
+  width: 90%;
+  margin: 0 auto;
+  min-width: 1200px;
+  display: block;
 }
 #video-title {
+  width: 50%;
   text-align: left;
+  display: block;
   margin: 10px 0px;
   color: white;
   text-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 rgb(233, 25, 25),
     -1px -1px 0 #000;
 }
+#player-component {
+  width: 100%;
+  display: flex;
+}
 #dplayer {
-  width: 720px;
-  height: 405px;
+  width: 64%;
+  min-width: 720px;
+  min-height: 405px;
+  /* height: 50%; */
+}
+#btn-wrap {
+  width: 36%;
+  padding-left: 3%;
+}
+.btn-group {
+  width: 340px;
+  /* float: right; */
+  /* margin: 0 0 0 0; */
+  /* height: 100%; */
 }
 </style>

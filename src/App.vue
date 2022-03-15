@@ -20,6 +20,7 @@
 
 #nav {
   padding: 30px;
+  height: 90%;
 
   a { 
     font-weight: bold;

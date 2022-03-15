@@ -2,10 +2,7 @@
   <div class="page-content">
     <div class="card-list">
       <div class="v-card" v-for="(item, index) in videoList" :key="index">
-        <div
-          class="card"
-          @click="video(item.id, item.firstEp, item.title, item.timeline)"
-        >
+        <div class="card" @click="video(item.id, item.firstEp, item.title)">
           <div
             id="video-pic"
             :style="{
@@ -22,8 +19,6 @@
 </template>
 
 <script>
-import axios from "axios";
-import API from "../const/const";
 export default {
   name: "VideoList",
   props: {
@@ -31,39 +26,26 @@ export default {
       type: String,
       required: true,
     },
-  },
-  data() {
-    return {
-      videoList: [],
-      publicPath: process.env.BASE_URL,
-    };
-  },
-
-  methods: {
-    _getVideoList() {
-      const that = this;
-      axios({
-        method: "get",
-        url: `${API.backendAPI}v1/videos/${this.page}/info`,
-        params: {
-          page_size: 9,
-        },
-      }).then(
-        function (response) {
-          that.videoList = response.data.data;
-          console.log(that.videoList);
-        },
-        function (err) {
-          console.log(err);
-        }
-      );
+    videoList: {
+      type: Array,
+      required: true,
     },
+  },
+  methods: {
     // 点击跳转
-    video(vid, eid, title, timeline) {
+    video(vid, eid, title) {
       // 如果当前视频没有第一话，则从数据库中获取到的eid为-1
+      // 从localStorage中获取vid
       if (eid == -1) {
         return;
       }
+      let timeline = 0;
+      if (localStorage.getItem(vid)) {
+        let item = JSON.parse(localStorage.getItem(vid));
+        eid = item.eid;
+        timeline = item.timeline;
+      }
+
       this.$router.push({
         name: "Video",
         params: { vid, eid },
@@ -74,21 +56,21 @@ export default {
       });
     },
   },
-  created() {
-    this._getVideoList();
-  },
 };
 </script>
 
 <style  scoped>
 .page-content {
   margin: 0 auto;
-  max-width: 1200px;
+  height: 80%;
+  max-width: 80%;
+  min-height: 480px;
   /* padding: 10px 10%; */
   /* min-height: 100%; */
   /* width: 80%; */
 }
 .card-list {
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: left;
@@ -99,6 +81,7 @@ export default {
 .v-card {
   flex: 0 0 33%;
   max-width: 33%;
+  height: 30%;
   /* margin: 1% 1%; */
 
   /* padding: 1em 2em; */
@@ -110,10 +93,12 @@ export default {
   padding: 10px 20px;
   border-radius: 2px;
   cursor: pointer;
+  height: 100%;
 }
 
 #video-pic {
   /* width: 100%; */
+  height: 100%;
   min-height: 140px;
   background-repeat: no-repeat;
   background-size: cover;

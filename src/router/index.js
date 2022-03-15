@@ -1,6 +1,4 @@
-import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home'
 import Video from '../views/Video'
 import Index from '../views/Index'
 import SpecialView from '../views/SpecialView'

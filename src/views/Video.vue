@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header />
+    <!-- <Header /> -->
     <div class="v-wrap">
       <VidePlayer
         :src="src"
@@ -10,13 +10,7 @@
         :vid="vid"
         :eid="eid"
         :timeline="timeline"
-      />
-      <EpisodeBtns
-        :vid="vid"
-        :eid="eid"
         :episodes="episodes"
-        :title="title"
-        :episode="episode"
         :classify="classify"
       />
     </div>
@@ -26,7 +20,6 @@
 <script>
 import Header from "@/components/Header";
 import VidePlayer from "@/components/VidePlayer";
-import EpisodeBtns from "@/components/EpisodeBtns";
 import axios from "axios";
 import API from "../const/const";
 
@@ -35,7 +28,6 @@ export default {
   components: {
     Header,
     VidePlayer,
-    EpisodeBtns,
   },
   data() {
     return {
@@ -83,7 +75,6 @@ export default {
 
   created() {
     this._getVideoInfo(this.vid, this.eid);
-    var _this = this;
     this.timer = setInterval(function () {
       let dd = new Date().getDate();
       let hh = new Date().getHours();
@@ -96,6 +87,7 @@ export default {
       }
     }, 1000);
   },
+
   beforeDestory() {
     if (this.timer) {
       clearInterval(this.timer);
@@ -106,8 +98,8 @@ export default {
 
 <style lang="less" scoped>
 .v-wrap {
-  width: 1280px;
-  height: 720px;
+  width: 100%;
+  // height: 720px;
   margin: 0 auto;
 }
 </style>

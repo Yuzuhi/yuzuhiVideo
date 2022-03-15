@@ -104,7 +104,6 @@ export default {
 <style lang="less" scoped>
 #element-btn {
   min-width: 75px;
-
   margin: 5px -5px;
 }
 #btn-group-text {
@@ -112,10 +111,7 @@ export default {
   margin: 0px 2px 3px;
 }
 .btn-area {
-  width: 340px;
-  margin: 52px 10px;
-  float: left;
-  display: block;
+  min-width: 340px;
   padding: 30px;
   background-color: #f4f4f4;
 }

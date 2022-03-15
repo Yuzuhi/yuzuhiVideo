@@ -3,7 +3,8 @@
     class="v-pagination"
     background
     layout="prev, pager, next"
-    :total="100"
+    :total="totalPage * 9"
+    :page-size="9"
     @current-change="handleCurrentChange"
     :current-page="currentPage"
   >
@@ -15,18 +16,20 @@
 export default {
   name: "Pagination",
   props: {
+    totalPage: {
+      type: Number,
+      required: true,
+    },
     currentPage: {
       type: Number,
       required: true,
     },
   },
-  data() {
-    return {};
-  },
   methods: {
     handleCurrentChange: function (cPage) {
       //   this.currentPage = cPage;
-      console.log(cPage);
+      console.log(this.totalPage);
+      console.log("hello");
       this.$router.push({
         name: "Index",
         params: { page: cPage },
@@ -39,6 +42,6 @@ export default {
 
 <style lang="less" scoped>
 .v-pagination {
-  margin-top: 10px;
+  margin-top: 20px;
 }
 </style>
